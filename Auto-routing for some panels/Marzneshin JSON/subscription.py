@@ -72,9 +72,11 @@ def user_subscription(
         subscription_settings.template_on_acceptance
         and "text/html" in request.headers.get("Accept", [])
     ):
-        return HTMLResponse(
-            generate_subscription_template(db_user, subscription_settings)
-        )
+        try:
+            template_content = generate_subscription_template(db, db_user, subscription_settings)
+        except TypeError:
+            template_content = generate_subscription_template(db_user, subscription_settings)
+        return HTMLResponse(template_content)
 
     response_headers = {
         "content-disposition": f'attachment; filename="{user.username}"',
@@ -101,11 +103,11 @@ def user_subscription(
     for rule in subscription_settings.rules:
         if re.match(rule.pattern, user_agent):
             if rule.result.value == "template":
-                return HTMLResponse(
-                    generate_subscription_template(
-                        db_user, subscription_settings
-                    )
-                )
+                try:
+                    template_content = generate_subscription_template(db, db_user, subscription_settings)
+                except TypeError:
+                    template_content = generate_subscription_template(db_user, subscription_settings)
+                return HTMLResponse(template_content)
             elif rule.result.value == "block":
                 raise HTTPException(404)
             elif rule.result.value == "base64-links":
@@ -115,15 +117,27 @@ def user_subscription(
                 b64 = False
                 config_format = rule.result.value
 
-            conf = generate_subscription(
-                user=db_user,
-                config_format=config_format,
-                as_base64=b64,
-                use_placeholder=not user.is_active
-                and subscription_settings.placeholder_if_disabled,
-                placeholder_remark=subscription_settings.placeholder_remark,
-                shuffle=subscription_settings.shuffle_configs,
-            )
+            try:
+                conf = generate_subscription(
+                    db,
+                    user=db_user,
+                    config_format=config_format,
+                    as_base64=b64,
+                    use_placeholder=not user.is_active
+                    and subscription_settings.placeholder_if_disabled,
+                    placeholder_remark=subscription_settings.placeholder_remark,
+                    shuffle=subscription_settings.shuffle_configs,
+                )
+            except TypeError:
+                conf = generate_subscription(
+                    user=db_user,
+                    config_format=config_format,
+                    as_base64=b64,
+                    use_placeholder=not user.is_active
+                    and subscription_settings.placeholder_if_disabled,
+                    placeholder_remark=subscription_settings.placeholder_remark,
+                    shuffle=subscription_settings.shuffle_configs,
+                )
             return Response(
                 content=conf,
                 media_type=config_mimetype[rule.result],
@@ -201,15 +215,27 @@ def user_subscription_with_client_type(
         # Если возникает любая ошибка, просто не добавляем заголовок routing
         pass
 
-    conf = generate_subscription(
-        user=db_user,
-        config_format="links" if client_type == "v2ray" else client_type,
-        as_base64=client_type == "v2ray",
-        use_placeholder=not user.is_active
-        and subscription_settings.placeholder_if_disabled,
-        placeholder_remark=subscription_settings.placeholder_remark,
-        shuffle=subscription_settings.shuffle_configs,
-    )
+    try:
+        conf = generate_subscription(
+            db,
+            user=db_user,
+            config_format="links" if client_type == "v2ray" else client_type,
+            as_base64=client_type == "v2ray",
+            use_placeholder=not user.is_active
+            and subscription_settings.placeholder_if_disabled,
+            placeholder_remark=subscription_settings.placeholder_remark,
+            shuffle=subscription_settings.shuffle_configs,
+        )
+    except TypeError:
+        conf = generate_subscription(
+            user=db_user,
+            config_format="links" if client_type == "v2ray" else client_type,
+            as_base64=client_type == "v2ray",
+            use_placeholder=not user.is_active
+            and subscription_settings.placeholder_if_disabled,
+            placeholder_remark=subscription_settings.placeholder_remark,
+            shuffle=subscription_settings.shuffle_configs,
+        )
     return Response(
         content=conf,
         media_type=client_type_mime_type[client_type],
