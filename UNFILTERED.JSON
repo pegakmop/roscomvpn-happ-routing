@@ -3,16 +3,16 @@
     "GlobalProxy": "true",
     "UseChunkFiles": "true",
     "RemoteDns": "1.1.1.1",
-    "DomesticDns": "8.8.8.8",
+    "DomesticDns": "77.88.8.8",
     "RemoteDNSType": "DoU",
     "RemoteDNSDomain": "https://cloudflare-dns.com/dns-query",
     "RemoteDNSIP": "1.1.1.1",
     "DomesticDNSType": "DoU",
-    "DomesticDNSDomain": "https://dns.google/dns-query",
-    "DomesticDNSIP": "8.8.8.8",
-    "Geoipurl": "https://github.com/hydraponique/roscomvpn-geoip/releases/download/202601240707/geoip.dat",
-    "Geositeurl": "https://github.com/hydraponique/roscomvpn-geosite/releases/download/202601240707/geosite.dat",
-    "LastUpdated": "1769230000",
+    "DomesticDNSDomain": "https://common.dot.dns.yandex.net/dns-query",
+    "DomesticDNSIP": "77.88.8.8",
+    "Geoipurl": "https://github.com/hydraponique/roscomvpn-geoip/releases/download/202601301556/geoip.dat",
+    "Geositeurl": "https://github.com/hydraponique/roscomvpn-geosite/releases/download/202601291556/geosite.dat",
+    "LastUpdated": "1769790000",
     "DnsHosts": {},
     "RouteOrder": "block-proxy-direct",
     "DirectSites": [
@@ -26,9 +26,11 @@
         "geosite:escapefromtarkov",
         "geosite:steam",
         "geosite:twitch",
-        "geosite:pinterest"
+        "geosite:pinterest",
+        "geosite:faceit"
     ],
     "DirectIp": [
+        "geoip:private",
         "geoip:direct"
     ],
     "ProxySites": [
